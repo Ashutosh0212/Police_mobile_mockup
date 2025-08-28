@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jodhpur Police Duty Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .phone-container {
+            max-width: 375px;
+            margin: 20px auto;
+            background: #000;
+            border-radius: 30px;
+            padding: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .screen {
+            background: #fff;
+            border-radius: 22px;
+            overflow: hidden;
+            height: 812px;
+            position: relative;
+        }
+
+        .view {
+            display: none;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 50px 20px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            color: #2a5298;
+            border-bottom: 2px solid #2a5298;
+        }
+
+        .content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #2a5298;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .duty-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .duty-item:last-child {
+            border-bottom: none;
+        }
+
+        .duty-info h4 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .duty-info p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .btn {
+            background: #2a5298;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #1e3c72;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2a5298;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            max-width: 375px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            padding: 8px 0;
+            border-radius: 0 0 22px 22px;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #2a5298;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin: 0 auto 4px;
+            background: currentColor;
+            border-radius: 2px;
+            opacity: 0.6;
+        }
+
+        .nav-item.active .nav-icon {
+            opacity: 1;
+        }
+
+        .nav-label {
+            font-size: 10px;
+        }
+
+        .location-info {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .tracking-status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background: #4caf50;
+        }
+
+        .status-offline {
+            background: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="screen">
+            <!-- Officer Dashboard View -->
+            <div id="officer-view" class="view active">
+                <div class="header">
+                    <div class="badge">Officer</div>
+                    <h1>Jodhpur Police</h1>
+                    <div class="subtitle">Duty Management Portal</div>
+                </div>
+
+                <div class="nav-tabs">
+                    <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+                    <button class="nav-tab" onclick="switchTab('duties')">My Duties</button>
+                    <button class="nav-tab" onclick="switchTab('tracking')">Tracking</button>
+                </div>
+
+                <div class="content">
+                    <div id="dashboard-content">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">3</div>
+                                <div class="stat-label">Active Duties</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">12</div>
+                                <div class="stat-label">Completed</div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Current Duty</div>
+                                <span class="status-badge status-active">On Duty</span>
+                            </div>
+                            <div class="duty-info">
+                                <h4>Traffic Control - Sojati Gate</h4>
+                                <p>Shift: 6:00 AM - 2:00 PM</p>
+                                <p>Supervisor: SI Ramesh Kumar</p>
+                            </div>
+                            <div class="location-info">
+                                📍 Near Sojati Gate Circle, Jodhpur
+                            </div>
+                            <button class="btn">Check In</button>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Upcoming Duties</div>
+                            </div>
+                            <div class="duty-item">
+                                <div class="duty-info">
+                                    <h4>Patrol Duty - Clock Tower Area</h4>
+                                    <p>Tomorrow, 2:00 PM - 10:00 PM</p>
+                                </div>
+                                <span class="status-badge status-pending">Scheduled</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="duties-content" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Today's Schedule</div>
+                            </div>
+                            <div class="duty-item">
+                                <div class="duty-info">
+                                    <h4>Morning Patrol</h4>
+                                    <p>6:00 AM - 10:00 AM • Completed</p>
+                                </div>
+                                <span class="status-badge status-completed">✓</span>
+                            </div>
+                            <div class="duty-item">
+                                <div class="duty-info">
+                                    <h4>Traffic Control</h4>
+                                    <p>2:00 PM - 6:00 PM • Active</p>
+                                </div>
+                                <span class="status-badge status-active">Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tracking-content" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Live Tracking</div>
+                                <button class="btn-small" onclick="toggleMapView()" style="background: #2a5298; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px;">Map View</button>
+                            </div>
+                            
+                            <div id="map-container" style="display: none;">
+                                <div class="jodhpur-map">
+                                    <svg viewBox="0 0 300 200" style="width: 100%; height: 200px; background: #f0f8ff; border-radius: 8px;">
+                                        <!-- Jodhpur City Boundaries -->
+                                        <rect x="0" y="0" width="300" height="200" fill="#e8f5e8" stroke="#ccc" stroke-width="1"/>
+                                        
+                                        <!-- Major Roads -->
+                                        <line x1="0" y1="100" x2="300" y2="100" stroke="#666" stroke-width="3"/>
+                                        <line x1="150" y1="0" x2="150" y2="200" stroke="#666" stroke-width="3"/>
+                                        <line x1="75" y1="50" x2="225" y2="150" stroke="#888" stroke-width="2"/>
+                                        <line x1="75" y1="150" x2="225" y2="50" stroke="#888" stroke-width="2"/>
+                                        
+                                        <!-- Landmarks -->
+                                        <!-- Mehrangarh Fort -->
+                                        <rect x="180" y="30" width="30" height="20" fill="#8B4513" rx="3"/>
+                                        <text x="195" y="58" text-anchor="middle" font-size="8" fill="#333">Fort</text>
+                                        
+                                        <!-- Clock Tower -->
+                                        <circle cx="150" cy="100" r="8" fill="#4169E1"/>
+                                        <text x="150" y="115" text-anchor="middle" font-size="8" fill="#333">Clock Tower</text>
+                                        
+                                        <!-- Sojati Gate -->
+                                        <rect x="60" y="90" width="15" height="10" fill="#DAA520" rx="2"/>
+                                        <text x="67" y="108" text-anchor="middle" font-size="8" fill="#333">Sojati</text>
+                                        
+                                        <!-- Umaid Bhawan -->
+                                        <rect x="220" y="120" width="25" height="15" fill="#CD853F" rx="3"/>
+                                        <text x="232" y="143" text-anchor="middle" font-size="8" fill="#333">Umaid</text>
+                                        
+                                        <!-- Police Stations -->
+                                        <rect x="140" y="60" width="8" height="8" fill="#FF0000" rx="1"/>
+                                        <text x="144" y="75" text-anchor="middle" font-size="7" fill="#333">PS1</text>
+                                        
+                                        <rect x="100" y="130" width="8" height="8" fill="#FF0000" rx="1"/>
+                                        <text x="104" y="145" text-anchor="middle" font-size="7" fill="#333">PS2</text>
+                                        
+                                        <!-- Live Officer Positions -->
+                                        <!-- Officer 1 - Moving -->
+                                        <circle cx="120" cy="80" r="4" fill="#00FF00">
+                                            <animate attributeName="cx" values="120;125;120" dur="3s" repeatCount="indefinite"/>
+                                            <animate attributeName="cy" values="80;85;80" dur="3s" repeatCount="indefinite"/>
+                                        </circle>
+                                        <text x="120" y="70" text-anchor="middle" font-size="7" fill="#333">PC Mohan</text>
+                                        
+                                        <!-- Officer 2 - Stationary -->
+                                        <circle cx="180" cy="120" r="4" fill="#FFD700"/>
+                                        <text x="180" y="110" text-anchor="middle" font-size="7" fill="#333">PC Suresh</text>
+                                        
+                                        <!-- Current User Position -->
+                                        <circle cx="67" cy="95" r="5" fill="#FF4444">
+                                            <animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite"/>
+                                        </circle>
+                                        <text x="67" y="85" text-anchor="middle" font-size="7" fill="#333" font-weight="bold">You</text>
+                                        
+                                        <!-- Patrol Routes -->
+                                        <path d="M 120 80 Q 150 90 180 120" stroke="#00FF00" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                                        <path d="M 67 95 Q 100 100 150 100" stroke="#FF4444" stroke-width="2" fill="none" stroke-dasharray="3,3"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div class="tracking-status">
+                                <div class="status-dot status-online"></div>
+                                <span>GPS Tracking Active</span>
+                            </div>
+                            
+                            <div class="location-info">
+                                📍 Current Location: Sojati Gate Circle<br>
+                                📊 Coordinates: 26.2389°N, 73.0243°E<br>
+                                🕐 Last Updated: 2 minutes ago<br>
+                                🚶 Speed: 2.5 km/h (Walking)
+                            </div>
+                            
+                            <!-- Officer Status List -->
+                            <div class="officers-list" style="margin-top: 16px;">
+                                <h4 style="font-size: 14px; margin-bottom: 12px; color: #333;">Nearby Officers</h4>
+                                
+                                <div class="officer-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                    <div>
+                                        <div style="display: flex; align-items: center;">
+                                            <div class="status-dot status-online" style="margin-right: 8px;"></div>
+                                            <strong style="font-size: 13px;">PC Mohan Singh</strong>
+                                        </div>
+                                        <p style="font-size: 11px; color: #666; margin: 2px 0;">Patrol - Mehrangarh Area</p>
+                                        <p style="font-size: 11px; color: #666;">📍 0.8 km away</p>
+                                    </div>
+                                    <button class="btn-small" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px;">Call</button>
+                                </div>
+                                
+                                <div class="officer-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                    <div>
+                                        <div style="display: flex; align-items: center;">
+                                            <div class="status-dot" style="background: #ffc107; margin-right: 8px;"></div>
+                                            <strong style="font-size: 13px;">PC Suresh Choudhary</strong>
+                                        </div>
+                                        <p style="font-size: 11px; color: #666; margin: 2px 0;">Traffic Control - Clock Tower</p>
+                                        <p style="font-size: 11px; color: #666;">📍 1.2 km away</p>
+                                    </div>
+                                    <button class="btn-small" style="background: #17a2b8; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px;">Locate</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Actions -->
+                            <div class="quick-actions" style="margin-top: 16px;">
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                                    <button class="btn btn-secondary" style="padding: 8px; font-size: 12px;">Emergency Alert</button>
+                                    <button class="btn" style="padding: 8px; font-size: 12px;">Share Location</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Patrol History -->
+                        <div class="card" style="margin-top: 16px;">
+                            <div class="card-header">
+                                <div class="card-title">Today's Patrol Route</div>
+                            </div>
+                            <div class="patrol-timeline">
+                                <div class="timeline-item" style="display: flex; align-items: center; padding: 8px 0; border-left: 2px solid #28a745; padding-left: 12px; margin-left: 8px;">
+                                    <div>
+                                        <h4 style="font-size: 12px; margin-bottom: 2px;">Sojati Gate</h4>
+                                        <p style="font-size: 11px; color: #666;">6:15 AM - Current</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item" style="display: flex; align-items: center; padding: 8px 0; border-left: 2px solid #6c757d; padding-left: 12px; margin-left: 8px;">
+                                    <div>
+                                        <h4 style="font-size: 12px; margin-bottom: 2px;">Paota Circle</h4>
+                                        <p style="font-size: 11px; color: #666;">6:00 AM - 6:15 AM</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item" style="display: flex; align-items: center; padding: 8px 0; border-left: 2px solid #6c757d; padding-left: 12px; margin-left: 8px;">
+                                    <div>
+                                        <h4 style="font-size: 12px; margin-bottom: 2px;">Police Station</h4>
+                                        <p style="font-size: 11px; color: #666;">5:45 AM - 6:00 AM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supervisor Dashboard View -->
+            <div id="supervisor-view" class="view">
+                <div class="header">
+                    <div class="badge">Supervisor</div>
+                    <h1>Duty Management</h1>
+                    <div class="subtitle">SI Ramesh Kumar</div>
+                </div>
+
+                <div class="nav-tabs">
+                    <button class="nav-tab active" onclick="switchSupTab('overview')">Overview</button>
+                    <button class="nav-tab" onclick="switchSupTab('assign')">Assign</button>
+                    <button class="nav-tab" onclick="switchSupTab('officers')">Officers</button>
+                </div>
+
+                <div class="content">
+                    <div id="overview-content">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">15</div>
+                                <div class="stat-label">Active Officers</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">8</div>
+                                <div class="stat-label">On Duty</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">3</div>
+                                <div class="stat-label">Off Duty</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">4</div>
+                                <div class="stat-label">On Leave</div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Recent Assignments</div>
+                            </div>
+                            <div class="duty-item">
+                                <div class="duty-info">
+                                    <h4>PC Mohan Singh</h4>
+                                    <p>Patrol - Mehrangarh Area</p>
+                                </div>
+                                <span class="status-badge status-active">Active</span>
+                            </div>
+                            <div class="duty-item">
+                                <div class="duty-info">
+                                    <h4>PC Suresh Choudhary</h4>
+                                    <p>Traffic Control - Clock Tower</p>
+                                </div>
+                                <span class="status-badge status-active">Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="assign-content" style="display: none;">
+                        <div class="card">
+                            <div class="card-title">Assign New Duty</div>
+                            <form style="margin-top: 16px;">
+                                <div class="form-group">
+                                    <label class="form-label">Select Officer</label>
+                                    <select class="form-control">
+                                        <option>PC Mohan Singh</option>
+                                        <option>PC Suresh Choudhary</option>
+                                        <option>PC Rajesh Kumar</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Duty Type</label>
+                                    <select class="form-control">
+                                        <option>Patrol Duty</option>
+                                        <option>Traffic Control</option>
+                                        <option>Security Detail</option>
+                                        <option>Investigation</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Location</label>
+                                    <input type="text" class="form-control" placeholder="Enter duty location">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Time</label>
+                                    <input type="datetime-local" class="form-control">
+                                </div>
+                                <button type="button" class="btn">Assign Duty</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="officers-content" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Officer Status</div>
+                            </div>
+                            <div class="duty-item">
+                                <div class="duty-info">
+                                    <h4>PC Mohan Singh</h4>
+                                    <p>📍 Mehrangarh Fort Area</p>
+                                </div>
+                                <button class="btn btn-small">Track</button>
+                            </div>
+                            <div class="duty-item">
+                                <div class="duty-info">
+                                    <h4>PC Suresh Choudhary</h4>
+                                    <p>📍 Clock Tower Circle</p>
+                                </div>
+                                <button class="btn btn-small">Track</button>
+                            </div>
+                            <div class="duty-item">
+                                <div class="duty-info">
+                                    <h4>PC Rajesh Kumar</h4>
+                                    <p>Off Duty</p>
+                                </div>
+                                <span class="status-badge status-pending">Available</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="switchView('officer')">
+                    <div class="nav-icon"></div>
+                    <div class="nav-label">Officer</div>
+                </div>
+                <div class="nav-item" onclick="switchView('supervisor')">
+                    <div class="nav-icon"></div>
+                    <div class="nav-label">Supervisor</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchView(view) {
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Update views
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(view + '-view').classList.add('active');
+        }
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update content for officer view
+            document.querySelectorAll('[id$="-content"]').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(tab + '-content').style.display = 'block';
+        }
+
+        function switchSupTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update content for supervisor view
+            document.querySelectorAll('[id$="-content"]').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(tab + '-content').style.display = 'block';
+        }
+
+        function toggleMapView() {
+            const mapContainer = document.getElementById('map-container');
+            mapContainer.style.display = mapContainer.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            const timeElements = document.querySelectorAll('.location-info');
+            timeElements.forEach(el => {
+                if (el.textContent.includes('Last Updated')) {
+                    const minutes = Math.floor(Math.random() * 5) + 1;
+                    el.innerHTML = el.innerHTML.replace(/\d+ minutes ago/, minutes + ' minutes ago');
+                }
+            });
+        }, 30000);
+    </script>
+</body>
+</html>
